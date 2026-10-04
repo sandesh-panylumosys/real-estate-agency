@@ -1,26 +1,206 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --color-ivory: #f4f1eb;
+  --color-charcoal: #171717;
+  --color-ink: #0d0d0d;
+  --color-stone: #d8d0c4;
+  --color-taupe: #a99b8b;
+  --color-bronze: #a8875a;
+  --color-soft: #faf9f6;
+  --color-muted: #77736d;
+
+  --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-manrope), "Manrope", system-ui, sans-serif;
+
+  --ease-arch: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --breakpoint-xs: 23rem;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --gutter: clamp(1rem, 3.2vw, 3rem);
+  --sv: 0; /* smoothed scroll velocity, -1…1, set by SmoothScroll */
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-ink);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ivory);
+  color: var(--color-charcoal);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-bronze);
+  color: var(--color-soft);
+}
+
+/* ——— Typography ——— */
+.font-display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.meta {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.px-gutter {
+  padding-inline: var(--gutter);
+}
+
+/* SplitType line masks */
+.split-line {
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+/* ——— Focus ——— */
+:focus-visible {
+  outline: 1.5px solid var(--color-bronze);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 200;
+  transform: translateY(-200%);
+  background: var(--color-ink);
+  color: var(--color-soft);
+  padding: 0.75rem 1.25rem;
+}
+.skip-link:focus {
+  transform: none;
+}
+
+/* ——— Custom cursor ——— */
+html.has-cursor,
+html.has-cursor a,
+html.has-cursor button,
+html.has-cursor [role="button"],
+html.has-cursor label {
+  cursor: none;
+}
+html.has-cursor input,
+html.has-cursor textarea,
+html.has-cursor select {
+  cursor: auto;
+}
+
+/* ——— Architectural elements that drift with scroll momentum ——— */
+.drift {
+  transform: translate3d(0, calc(var(--sv) * -28px), 0);
+  transition: transform 0.6s var(--ease-out-expo);
+  will-change: transform;
+}
+.drift-x {
+  transform: translate3d(calc(var(--sv) * 36px), 0, 0);
+  transition: transform 0.6s var(--ease-out-expo);
+  will-change: transform;
+}
+
+/* Blueprint grid used behind plans and drawings */
+.blueprint-grid {
+  background-image:
+    linear-gradient(to right, currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Hide scrollbars on swipe rails while keeping them scrollable */
+.rail {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* Location marker pulse */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.pulse-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse-ring 2.8s var(--ease-out-expo) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drift,
+  .drift-x {
+    transform: none !important;
+    transition: none;
+  }
+  .pulse-ring {
+    animation: none;
+    opacity: 0;
+  }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes scrollcue {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(200%);
+  }
+}
+
+@keyframes grow {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
 }
